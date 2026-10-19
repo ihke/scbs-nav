@@ -29,7 +29,53 @@
     -webkit-font-smoothing:antialiased;
     transition:background .25s,color .25s;
   }
-  .wrap{max-width:1080px;margin:0 auto;padding:48px 20px 80px}
+  .wrap{max-width:1080px;margin:0 0 0 236px;padding:48px 32px 80px}
+
+  /* ===== 左侧导航栏 ===== */
+  .sidebar{
+    position:fixed;top:0;left:0;width:216px;height:100vh;z-index:50;
+    background:var(--panel);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;padding:20px 12px 14px;
+    transition:background .25s,border-color .25s;
+  }
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:4px 8px 18px;text-decoration:none;color:inherit}
+  .sb-brand img{width:30px;height:30px;border-radius:8px;flex-shrink:0}
+  .sb-brand .t{font-size:15px;font-weight:650;letter-spacing:-.2px;line-height:1.2}
+  .sb-brand .s{font-size:11px;color:var(--text-2);margin-top:2px}
+
+  .sb-label{font-size:11px;color:var(--text-2);opacity:.7;padding:0 10px 8px;letter-spacing:.4px}
+
+  .sb-nav{flex:1;overflow-y:auto;overflow-x:hidden;margin:0 -4px;padding:0 4px}
+  .sb-nav::-webkit-scrollbar{width:5px}
+  .sb-nav::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+  .sb-item{
+    display:flex;align-items:center;gap:9px;width:100%;text-align:left;
+    border:0;background:transparent;color:var(--text-2);cursor:pointer;
+    padding:9px 10px;border-radius:10px;font-size:13.5px;font-family:inherit;
+    transition:.16s;margin-bottom:2px;position:relative;
+  }
+  .sb-item:hover{background:var(--panel-2);color:var(--text)}
+  .sb-item.on{
+    background:color-mix(in srgb,var(--accent) 10%,var(--panel));
+    color:var(--accent);font-weight:600;
+  }
+  .sb-item.on::before{
+    content:"";position:absolute;left:0;top:22%;height:56%;width:3px;
+    border-radius:0 3px 3px 0;background:var(--accent);
+  }
+  .sb-item .si{font-size:15px;line-height:1;flex-shrink:0}
+  .sb-item .sn{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sb-item .sc{font-size:11px;opacity:.55;font-variant-numeric:tabular-nums}
+
+  .sb-foot{border-top:1px solid var(--line);padding-top:10px;margin-top:8px;display:flex;gap:6px}
+  .sb-foot .icon-btn{width:36px;height:36px;border-radius:10px;font-size:15px}
+  .sb-foot .icon-btn.on{color:var(--accent);border-color:var(--accent)}
+
+  /* 移动端：隐藏侧栏，改用顶部 chips */
+  @media(max-width:900px){
+    .sidebar{display:none}
+    .wrap{margin:0 auto;padding:28px 16px 60px}
+  }
 
   /* 顶部 */
   header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:32px}
@@ -74,6 +120,8 @@
     font-family:inherit;transition:.18s;white-space:nowrap;
   }
   .chip:hover,.chip.on{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--panel))}
+  .chips.hide{display:none}
+  @media(min-width:901px){.chips{display:none}}
 
   /* 分组 */
   .group{margin-bottom:30px;animation:rise .4s both;scroll-margin-top:16px}
@@ -119,6 +167,21 @@
 </style>
 </head>
 <body>
+<aside class="sidebar">
+  <a class="sb-brand" href="/">
+    <img src="favicon.png" alt="">
+    <div>
+      <div class="t" id="sbTitle">四川办税</div>
+      <div class="s" id="sbSub">财税导航</div>
+    </div>
+  </a>
+  <div class="sb-label">全部分组</div>
+  <nav class="sb-nav" id="sbNav"></nav>
+  <div class="sb-foot">
+    <span id="sbTotal" style="font-size:11px;color:var(--text-2)"></span>
+  </div>
+</aside>
+
 <div class="wrap">
   <header>
     <div class="brand">
@@ -156,6 +219,9 @@
   document.title = SITE.title;
   $('#title').textContent = SITE.title;
   $('#subtitle').textContent = SITE.subtitle;
+  $('#sbTitle').textContent = SITE.title;
+  $('#sbSub').textContent = '财税导航';
+  $('#sbTotal').textContent = '共 ' + GROUPS.reduce((n, g) => n + g.items.length, 0) + ' 个站点';
 
   /* ---------- 深浅色：跟随系统 + 手动记忆 ---------- */
   const saved = localStorage.getItem('nav-theme');
@@ -181,7 +247,19 @@
   /* ---------- 渲染卡片 ---------- */
   const list = $('#list');
   const chips = $('#chips');
+  const sbNav = $('#sbNav');
   const frag = document.createDocumentFragment();
+  const sbItems = [];
+
+  /* 统一跳转 + 高亮（侧栏与 chips 共用） */
+  function activate(gi, smooth) {
+    const sec = document.getElementById('g' + gi);
+    if (!sec) return;
+    sec.classList.remove('collapsed');
+    sec.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+    sbItems.forEach((el, i) => el.classList.toggle('on', i === gi));
+    document.querySelectorAll('.chip').forEach((c, i) => c.classList.toggle('on', i === gi));
+  }
 
   GROUPS.forEach((g, gi) => {
     const sec = document.createElement('section');
@@ -200,17 +278,24 @@
     head.addEventListener('click', () => sec.classList.toggle('collapsed'));
     sec.appendChild(head);
 
-    /* 顶部快捷跳转 */
+    /* 左侧导航项 */
+    const sb = document.createElement('button');
+    sb.type = 'button';
+    sb.className = 'sb-item';
+    sb.innerHTML = '<span class="si"></span><span class="sn"></span><span class="sc"></span>';
+    sb.querySelector('.si').textContent = g.icon || '📁';
+    sb.querySelector('.sn').textContent = g.name;
+    sb.querySelector('.sc').textContent = g.items.length;
+    sb.onclick = () => activate(gi, true);
+    sbNav.appendChild(sb);
+    sbItems.push(sb);
+
+    /* 移动端顶部快捷跳转 */
     const chip = document.createElement('button');
     chip.type = 'button';
     chip.className = 'chip';
     chip.textContent = g.name;
-    chip.onclick = () => {
-      sec.classList.remove('collapsed');
-      sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      document.querySelectorAll('.chip').forEach((c) => c.classList.remove('on'));
-      chip.classList.add('on');
-    };
+    chip.onclick = () => activate(gi, true);
     chips.appendChild(chip);
 
     const grid = document.createElement('div');
@@ -256,6 +341,33 @@
   });
   list.appendChild(frag);
 
+  /* ---------- 滚动高亮：当前分组自动点亮侧栏 ---------- */
+  const secs = [...document.querySelectorAll('.group')];
+  let lockSpy = 0;
+  const spy = new IntersectionObserver((entries) => {
+    if (Date.now() < lockSpy) return;
+    const vis = entries.filter((e) => e.isIntersecting);
+    if (!vis.length) return;
+    const top = vis.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+    const gi = Number(top.target.id.slice(1));
+    sbItems.forEach((el, i) => el.classList.toggle('on', i === gi));
+    document.querySelectorAll('.chip').forEach((c, i) => c.classList.toggle('on', i === gi));
+    // 侧栏当前项滚入可视区
+    const active = sbItems[gi];
+    if (active && sbNav.scrollHeight > sbNav.clientHeight) {
+      const r = active.getBoundingClientRect(), nr = sbNav.getBoundingClientRect();
+      if (r.top < nr.top + 8 || r.bottom > nr.bottom - 8) {
+        active.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
+  secs.forEach((s) => spy.observe(s));
+
+  // 点击跳转后短暂锁定，避免滚动过程中高亮乱跳
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.sb-item, .chip')) lockSpy = Date.now() + 700;
+  }, true);
+
   /* ---------- 一键全部折叠 / 展开 ---------- */
   let allFolded = false;
   $('#foldBtn').onclick = () => {
@@ -283,7 +395,7 @@
       if (cnt) cnt.textContent = shown;
       total += shown;
     });
-    chips.style.display = kw ? 'none' : 'flex';
+    chips.classList.toggle('hide', !!kw);
     $('#empty').style.display = total ? 'none' : 'block';
   });
 

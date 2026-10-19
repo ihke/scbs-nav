@@ -39,6 +39,7 @@ const GROUPS = [
     icon: '🏛️',
     items: [
       { name: '四川电子税务局', url: 'https://etax.sichuan.chinatax.gov.cn/',        desc: '本省常用', icon: '' },
+      { name: '西藏电子税务局', url: 'https://etax.xizang.chinatax.gov.cn:5100/',      desc: '西藏', icon: '' },
       { name: '北京电子税务局', url: 'https://etax.beijing.chinatax.gov.cn:8443/',     desc: '北京', icon: '' },
       { name: '天津电子税务局', url: 'https://etax.tianjin.chinatax.gov.cn:8443/',     desc: '天津', icon: '' },
       { name: '河北电子税务局', url: 'https://etax.hebei.chinatax.gov.cn:8443/',       desc: '河北', icon: '' },
@@ -63,7 +64,6 @@ const GROUPS = [
       { name: '重庆电子税务局', url: 'https://etax.chongqing.chinatax.gov.cn:8443/',   desc: '重庆', icon: '' },
       { name: '贵州电子税务局', url: 'https://etax.guizhou.chinatax.gov.cn:8443/',     desc: '贵州', icon: '' },
       { name: '云南电子税务局', url: 'https://etax.yunnan.chinatax.gov.cn/',           desc: '云南', icon: '' },
-      { name: '西藏电子税务局', url: 'https://etax.xizang.chinatax.gov.cn:5100/',      desc: '西藏', icon: '' },
       { name: '陕西电子税务局', url: 'https://etax.shaanxi.chinatax.gov.cn/',          desc: '陕西', icon: '' },
       { name: '甘肃电子税务局', url: 'https://etax.gansu.chinatax.gov.cn:8443/',       desc: '甘肃', icon: '' },
       { name: '青海电子税务局', url: 'https://etax.qinghai.chinatax.gov.cn:8443/',     desc: '青海', icon: '' },
@@ -105,8 +105,8 @@ const GROUPS = [
     name: '会计相关',
     icon: '📚',
     items: [
-      { name: '全国会计人员统一服务管理平台', url: 'https://ausm.mof.gov.cn/index/', desc: '信息采集与调转', icon: '' },
-      { name: '会计继续教育查询', url: 'http://kj.scsczt.cn/toPage?toPage=cms/isreal', desc: '继续教育记录', icon: '' },
+      { name: '会计人员统一服务管理平台', url: 'https://ausm.mof.gov.cn/index/', desc: '信息采集与调转', icon: '' },
+      { name: '继续教育公需课', url: 'https://www.scjxjypx.com/', desc: '公需科报名', icon: '' },
       { name: '四川会计服务',     url: 'http://kj.scsczt.cn/',                         desc: '信息采集、继续教育、职称报名', icon: '' },
     ],
   },
