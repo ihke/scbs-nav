@@ -122,7 +122,7 @@ const GROUPS = [
     name: '财税工具',
     icon: '🔧',
     items: [
-      { name: '一般纳税人查询', url: 'https://etax.sichuan.chinatax.gov.cn/yhs-web/cxzx/index.html?code=1111&id=190822219#/ybnsrzgcx', desc: '四川一般纳税人资格查询', icon: '' },
+      { name: '一般纳税人查询', url: 'https://etax.sichuan.chinatax.gov.cn/xbgb/view/zhsfw/#/query/ybnsrzgcx', desc: '四川一般纳税人资格查询（免登录）', icon: '' },
     ],
   },
   {
