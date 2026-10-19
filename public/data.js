@@ -114,7 +114,7 @@ const GROUPS = [
     name: '软件下载',
     icon: '⬇️',
     items: [
-      { name: '社保申报软件下载', url: 'https://file.sichuan.chinatax.gov.cn/softdownload/202205/%E7%A4%BE%E4%BF%9D%E8%B4%B9%E7%AE%A1%E7%90%86%E5%AE%A2%E6%88%B7%E7%AB%AFV1.0.029.001.zip', desc: '社保费管理客户端 V1.0.029', icon: '💾' },
+      { name: '社保申报软件下载', url: 'https://file.sichuan.chinatax.gov.cn/softdownload/202312/khdV1.0.165_V1.0.122.zip', desc: '社保费管理客户端 V1.0.165', icon: '💾' },
       { name: '个税申报软件下载', url: 'https://file.etax.chinatax.gov.cn/bbxzdownload/kjkhd/ETax.exe', desc: '自然人电子税务局扣缴端', icon: '💾' },
     ],
   },
